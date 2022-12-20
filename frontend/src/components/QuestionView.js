@@ -84,10 +84,10 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `http://127.0.0.1:5000/api/v1/questions`, //DONE: update request URL
+      url: `http://127.0.0.1:5000/api/v1/questions/search`, //DONE: update request URL
       type: 'POST',
       dataType: 'json',
-      contentType: 'application/json',
+      contentType: 'application/json', 
       data: JSON.stringify({ searchTerm: searchTerm }),
       xhrFields: {
         withCredentials: true,
@@ -99,7 +99,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
         });
-        return;
+        // return;
       },
       error: (error) => {
         alert('Unable to load questions. Please try your request again');
@@ -168,7 +168,7 @@ class QuestionView extends Component {
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
             />
-          ))}
+          )) }
           <div className='pagination-menu'>{this.createPagination()}</div>
         </div>
       </div>
