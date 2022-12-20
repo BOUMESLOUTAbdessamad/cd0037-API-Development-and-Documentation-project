@@ -47,7 +47,8 @@ def create_app(test_config=None):
     @app.route('/api/v1/categories')
     def all_categories():
         categories = Category.query.all()
-        formated_cats = [category.format() for category in categories],
+        formated_cats = [category.format() for category in categories]
+
         return jsonify({
             "success" : True,
             "categories": formated_cats
@@ -150,15 +151,51 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
+    @app.route('/api/v1/questions', methods=['GET'])
+    def search_questions():
+        body = request.get_json()
+        search = body.get('search')
+        try:
+            if search:
+                questions = Question.query.filter( 
+                    Question.question.ilike("%{}%".format(search))
+                    )
+            
+            formated_results = paginate_questions(request, questions)
+
+            return jsonify({
+                "success": True,
+                "questions": formated_results,
+                "total_questions": len(questions),
+                "current_category": 1
+            })
+
+        except:
+            abort(422)
 
     """
-    @TODO:
+    @DONE:
     Create a GET endpoint to get questions based on category.
 
     TEST: In the "List" tab / main screen, clicking on one of the
     categories in the left column will cause only questions of that
     category to be shown.
     """
+
+    @app.route('/api/v1/categories/<int:category_id>/questions')
+    def get_questions_by_category(category_id):
+
+        try:
+            questions = Question.query.filter(Question.category == category_id).all()
+            if not questions:
+                abort(404)
+
+            return jsonify({
+                "success": True,
+                "questions": paginate_questions(request, questions)
+                })
+        except:
+            abort(422)
 
     """
     @TODO:
@@ -172,6 +209,34 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
+    @app.route('/api/v1/quizzes', methods=['POST'])
+    def quiz():
+        body = request.get()
+        selectedCategory = body.get('quiz_category', None).get('id')
+        prevQuestions = body.get('previous_questions')
+
+        try:
+            if selectedCategory == 0:
+                questions_by_category = Question.query.all() # Get All if category == 0
+            else:
+                questions_by_category = Question.query.filter(Question.category == selectedCategory).all()
+
+            new_questions = [question.format() for question in questions_by_category if question.id not in prevQuestions]
+
+            if len(new_questions) == 0:
+                next_question = None
+            else:
+                next_question = random.choice(new_questions)
+
+            return jsonify({
+                        "prevQuestions": prevQuestions,
+                        "question": next_question
+                    })
+
+        except:
+            abort(422)
+
+      
     """
     @DONE:
     Create error handlers for all expected errors
