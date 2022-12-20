@@ -21,7 +21,7 @@ class QuizView extends Component {
 
   componentDidMount() {
     $.ajax({
-      url: `http://127.0.0.1:5000/categories`, //TODO: update request URL
+      url: `http://127.0.0.1:5000/api/v1/categories`, //DONE: update request URL
       type: 'GET',
       success: (result) => {
         this.setState({ categories: result.categories });
@@ -49,7 +49,7 @@ class QuizView extends Component {
     }
 
     $.ajax({
-      url: 'http://127.0.0.1:5000/quizzes', //TODO: update request URL
+      url: 'http://127.0.0.1:5000/api/v1/quizzes', //DONE: update request URL
       type: 'POST',
       dataType: 'json',
       contentType: 'application/json',
@@ -107,14 +107,14 @@ class QuizView extends Component {
           <div className='play-category' onClick={this.selectCategory}>
             ALL
           </div>
-          {Object.keys(this.state.categories).map((id) => {
+          {Object.keys(this.state.categories).map((index, id) => {
             return (
               <div
                 key={id}
                 value={id}
                 className='play-category'
                 onClick={() =>
-                  this.selectCategory({ type: this.state.categories[id], id })
+                  this.selectCategory({ type: this.state.categories[index].type, id })
                 }
               >
                 {this.state.categories[id]}
