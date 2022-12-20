@@ -24,12 +24,12 @@ def create_app(test_config=None):
     setup_db(app)
 
     """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    @DONE: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
-    CORS(app)
+    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     """
-    @TODO: Use the after_request decorator to set Access-Control-Allow
+    @DONE: Use the after_request decorator to set Access-Control-Allow
     """
 
     @app.after_request
@@ -38,14 +38,22 @@ def create_app(test_config=None):
         response.headers.add("Access-Control-Allow-Methods", "GET, POST, PATCH,DELETE, PUT, OPTIONS")
         return response
     """
-    @TODO:
+    @DONE:
     Create an endpoint to handle GET requests
     for all available categories.
     """
 
+    @app.route('/categories')
+    def all_categories():
+        categories = Category.query.all()
+        formated_cats = [category.format() for category in categories],
+        return jsonify({
+            "success" : True,
+            "categories": formated_cats
+        })
 
     """
-    @TODO:
+    @DONE:
     Create an endpoint to handle GET requests for questions,
     including pagination (every 10 questions).
     This endpoint should return a list of questions,
@@ -59,24 +67,43 @@ def create_app(test_config=None):
     @app.route('/questions')
     def get_questions():
         questions = Question.query.all()
+        categories = Category.query.all()
         paginated_questions = paginate_questions(request, questions)
-
+        formated_cats = [category.format() for category in categories]
+        
         return jsonify({
             "success": True,
             "questions": paginated_questions,
-            "questions_count": len(questions)
+            "categories": formated_cats,
+            "total_questions": len(questions),
+            "currentCategory": 1
         })
 
+
     """
-    @TODO:
+    @DONE:
     Create an endpoint to DELETE question using a question ID.
 
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
 
+    @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    def delete_question(question_id):
+        try:
+            question = Question.query.filter(Question.id==question_id).one_or_none()
+
+            if not question:
+                abort(404)
+
+            question.delete()
+            return jsonify({ "success": True })
+        except:
+            abort(422)
+
+     
     """
-    @TODO:
+    @DONE:
     Create an endpoint to POST a new question,
     which will require the question and answer text,
     category, and difficulty score.
@@ -85,6 +112,32 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+    @app.route('/questions', methods=['POST'])
+    def add_question():
+        body = request.get_json('question')
+        question = body.get('question', None)
+        answer = body.get('answer', None)
+        difficulty = body.get('difficulty', None)
+        category = body.get('category', None)
+        
+        try:
+            question = Question(
+                question=question, 
+                answer=answer, 
+                difficulty=difficulty, 
+                category=category
+                )
+
+            question.insert()
+
+        except:
+            abort(422)
+
+        return jsonify({
+            "success": True,
+        })
+
+
 
     """
     @TODO:
