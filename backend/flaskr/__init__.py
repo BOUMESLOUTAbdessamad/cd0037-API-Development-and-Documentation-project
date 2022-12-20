@@ -43,7 +43,7 @@ def create_app(test_config=None):
     for all available categories.
     """
 
-    @app.route('/categories')
+    @app.route('/api/v1/categories')
     def all_categories():
         categories = Category.query.all()
         formated_cats = [category.format() for category in categories],
@@ -64,7 +64,7 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
-    @app.route('/questions')
+    @app.route('/api/v1/questions')
     def get_questions():
         questions = Question.query.all()
         categories = Category.query.all()
@@ -88,7 +88,7 @@ def create_app(test_config=None):
     This removal will persist in the database and when you refresh the page.
     """
 
-    @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    @app.route('/api/v1/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         try:
             question = Question.query.filter(Question.id==question_id).one_or_none()
@@ -112,7 +112,7 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
-    @app.route('/questions', methods=['POST'])
+    @app.route('/api/v1/questions', methods=['POST'])
     def add_question():
         body = request.get_json('question')
         question = body.get('question', None)
@@ -140,7 +140,7 @@ def create_app(test_config=None):
 
 
     """
-    @TODO:
+    @DONE:
     Create a POST endpoint to get questions based on a search term.
     It should return any questions for whom the search term
     is a substring of the question.
@@ -172,10 +172,30 @@ def create_app(test_config=None):
     """
 
     """
-    @TODO:
+    @DONE:
     Create error handlers for all expected errors
     including 404 and 422.
     """
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({"success": False, "error": 400, "message": "bad request"}), 400
+
+    @app.errorhandler(401)
+    def unauthorised(error):
+        return jsonify({"success": False, "error": 401, "message": "unauthorised"}), 401
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return (
+            jsonify({"success": False, "error": 404, "message": "resource not found"}), 404
+        )
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return (
+            jsonify({"success": False, "error": 422, "message": "unprocessable"}),  422
+        ) 
 
     return app
 
