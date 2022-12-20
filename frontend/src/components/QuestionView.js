@@ -138,11 +138,12 @@ class QuestionView extends Component {
             Categories
           </h2>
           <ul>
-            {Object.keys(this.state.categories).map((index, id) => (
+            {
+            Object.keys(this.state.categories).map((index, id) => (
               <li
-                key={id}
+                key={index}
                 onClick={() => {
-                  this.getByCategory(id);
+                  this.getByCategory(this.state.categories[index].id);
                 }}
               >
                 {this.state.categories[index].type}

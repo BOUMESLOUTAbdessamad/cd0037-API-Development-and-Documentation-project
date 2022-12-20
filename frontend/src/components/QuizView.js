@@ -63,8 +63,6 @@ class QuizView extends Component {
       crossDomain: true,
       success: (result) => {
 
-        console.log(result)
-
         this.setState({
           showAnswer: false,
           previousQuestions: previousQuestions,
@@ -110,17 +108,17 @@ class QuizView extends Component {
           <div className='play-category' onClick={this.selectCategory}>
             ALL
           </div>
-          {Object.keys(this.state.categories).map((index, id) => {
+          {Object.keys(this.state.categories).map((id) => {
+
             return (
               <div
-                key={index}
-                value={id}
+                key={id}
+                value={this.state.categories[id].id}
                 className='play-category'
-                onClick={() =>
-                  this.selectCategory({ type : this.state.categories[index].type, id })
-                }
+                onClick={() => 
+                  this.selectCategory({ type : this.state.categories[id].type, id })}
               >
-                {this.state.categories[index].type}
+                {this.state.categories[id].type}
               </div>
             );
           })}
@@ -145,10 +143,8 @@ class QuizView extends Component {
   evaluateAnswer = () => {
     const formatGuess = this.state.guess
       // eslint-disable-next-line
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
-      .toLowerCase();
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
     const answerArray = this.state.currentQuestion.answer
-      .toLowerCase()
       .split(' ');
     return answerArray.every((el) => formatGuess.includes(el));
   };

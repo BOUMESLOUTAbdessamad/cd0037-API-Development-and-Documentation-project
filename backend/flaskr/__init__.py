@@ -211,7 +211,7 @@ def create_app(test_config=None):
 
     @app.route('/api/v1/quizzes', methods=['POST'])
     def quiz():
-        body = request.get()
+        body = request.get_json()
         selectedCategory = body.get('quiz_category', None).get('id')
         prevQuestions = body.get('previous_questions')
 
