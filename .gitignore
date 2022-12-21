@@ -13,3 +13,6 @@ ehthumbs.db
 Thumbs.db
 env/
 frontend/node_modules/
+/backend/requirements.txt
+/frontend/package.json
+/frontend/package-lock.json
