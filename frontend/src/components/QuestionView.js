@@ -84,10 +84,10 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `http://127.0.0.1:5000/api/v1/questions/search`, //DONE: update request URL
+      url: `http://127.0.0.1:5000/api/v1/questions`, //DONE: update request URL
       type: 'POST',
       dataType: 'json',
-      contentType: 'application/json', 
+      contentType: 'application/json',
       data: JSON.stringify({ searchTerm: searchTerm }),
       xhrFields: {
         withCredentials: true,
@@ -99,7 +99,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
         });
-        // return;
+        return;
       },
       error: (error) => {
         alert('Unable to load questions. Please try your request again');
@@ -110,7 +110,7 @@ class QuestionView extends Component {
 
   questionAction = (id) => (action) => {
     if (action === 'DELETE') {
-      if (window.confirm('Are you sure you want to delete the question?')) {
+      if (window.confirm('are you sure you want to delete the question?')) {
         $.ajax({
           url: `http://127.0.0.1:5000/api/v1/questions/${id}`, //DONE: update request URL
           type: 'DELETE',
@@ -138,19 +138,18 @@ class QuestionView extends Component {
             Categories
           </h2>
           <ul>
-            {
-            Object.keys(this.state.categories).map((index, id) => (
+            {Object.keys(this.state.categories).map((id) => (
               <li
-                key={index}
+                key={id}
                 onClick={() => {
-                  this.getByCategory(this.state.categories[index].id);
+                  this.getByCategory(id);
                 }}
               >
-                {this.state.categories[index].type}
+                {this.state.categories[id]}
                 <img
                   className='category'
-                  alt={`${this.state.categories[index].type}`}
-                  src={`${this.state.categories[index].type}.svg`}
+                  alt={`${this.state.categories[id].toLowerCase()}`}
+                  src={`${this.state.categories[id].toLowerCase()}.svg`}
                 />
               </li>
             ))}
@@ -168,7 +167,7 @@ class QuestionView extends Component {
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
             />
-          )) }
+          ))}
           <div className='pagination-menu'>{this.createPagination()}</div>
         </div>
       </div>
