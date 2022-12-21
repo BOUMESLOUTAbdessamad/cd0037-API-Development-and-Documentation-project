@@ -1,5 +1,5 @@
 
-# Trivia API Documentation[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+# Trivia API Documentation  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 Trivia API is a Quiz app. It allows you to add questions, update and delete them, also questions are classified by categories.
 
