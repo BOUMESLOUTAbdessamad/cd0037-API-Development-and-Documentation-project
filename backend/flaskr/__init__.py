@@ -151,24 +151,23 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
-    @app.route('/api/v1/questions', methods=['GET'])
+    @app.route('/api/v1/questions/search', methods=['POST'])
     def search_questions():
         body = request.get_json()
-        search = body.get('search')
-        try:
-            if search:
-                questions = Question.query.filter( 
-                    Question.question.ilike("%{}%".format(search))
-                    )
-            
-            formated_results = paginate_questions(request, questions)
+        searchTerm = body.get('searchTerm')
 
-            return jsonify({
-                "success": True,
-                "questions": formated_results,
-                "total_questions": len(questions),
-                "current_category": 1
-            })
+        try:
+            if searchTerm is None:
+                abort(404)
+            else:
+                keyword = "%{}%".format(searchTerm)
+                questions = Question.query.filter(Question.question.ilike(keyword)).all()
+                result = paginate_questions(request, questions)
+                return jsonify({
+                    "questions": result,
+                    "total_questions": len(questions),
+                    "current_category": None
+                })
 
         except:
             abort(422)
@@ -198,7 +197,7 @@ def create_app(test_config=None):
             abort(422)
 
     """
-    @TODO:
+    @DONE:
     Create a POST endpoint to get questions to play the quiz.
     This endpoint should take category and previous question parameters
     and return a random questions within the given category,
@@ -211,7 +210,7 @@ def create_app(test_config=None):
 
     @app.route('/api/v1/quizzes', methods=['POST'])
     def quiz():
-        body = request.get()
+        body = request.get_json()
         selectedCategory = body.get('quiz_category', None).get('id')
         prevQuestions = body.get('previous_questions')
 
@@ -232,11 +231,9 @@ def create_app(test_config=None):
                         "prevQuestions": prevQuestions,
                         "question": next_question
                     })
-
         except:
             abort(422)
 
-      
     """
     @DONE:
     Create error handlers for all expected errors
