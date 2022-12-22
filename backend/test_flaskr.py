@@ -28,15 +28,22 @@ class TriviaTestCase(unittest.TestCase):
 
         self.new_question = {
             "question": "What is the best FIFA world cup ever?", 
-            "anwser": "Qatar 2022",
+            "answer": "Qatar 2022",
             "category": 6,
-            "difficulty": 6
+            "difficulty": 1
             }
 
         self.quiz_data = {
-            "selectedCategory": 1,
-            "prevQuestions": [1,2,3,4]
+            "previous_questions": [99],
+            "quiz_category": {"type": "Other", "id": 7}, 
         }
+
+        self.quiz_data2 = {
+            "previous_questions": [],
+            "quiz_category": {"type": "Sports", "id": 6}, 
+        }
+
+
 
     def tearDown(self):
         """Executed after reach test"""
@@ -146,31 +153,23 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
     
         self.assertEqual(data['success'], False)
-        self.assertEqual(len(data['questions']), 0)
+        self.assertEqual(len(data['question']), 0)
         self.assertEqual(res.status_code, 404)
 
     #Test Test POST /api/v1/quizzes
     def test_quiz_get_random_question(self):
-        res = self.client().post('/api/v1/quizzes', json=self.quiz_data)
+        res = self.client().post('/api/v1/quizzes', json=self.quiz_data2)
         data = json.loads(res.data)
-    
-        self.assertEqual(data['question'])
+        self.assertTrue(data['question'])
+        self.assertEqual(len(data['prevQuestions']), 0)
         self.assertEqual(res.status_code, 200)
 
-    def test_quiz_get_no_question(self):
-        res = self.client().post('/api/v1/quizzes', json=self.quiz_data)
+    def test_400_on_quiz_bad_request(self):
+        res = self.client().post('/api/v1/quizzes')
         data = json.loads(res.data)
-    
-        self.assertEqual(data['question'], None)
-        self.assertEqual(res.status_code, 200)
 
-    def test_405_on_quiz_get_random_question(self):
-        res = self.client().post('/api/v1/quizzes', json=self.quiz_data)
-        data = json.loads(res.data)
-    
-        self.assertEqual(len(data['question']), 0)
-        self.assertEqual(res.status_code,  405)
-        self.assertEqual(data["message"], "method not allowed")
+        self.assertEqual(res.status_code,  400)
+        self.assertEqual(data["message"], "bad request")
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
