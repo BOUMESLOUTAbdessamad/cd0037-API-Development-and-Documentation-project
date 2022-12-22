@@ -38,6 +38,7 @@ def create_app(test_config=None):
         response.headers.add("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, PUT, OPTIONS") 
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response
+    
     """
     @DONE:
     Create an endpoint to handle GET requests
@@ -131,16 +132,11 @@ def create_app(test_config=None):
                 )
 
             question.insert()
-
+            return jsonify({
+                "success": True,
+            })
         except:
             abort(422)
-
-        return jsonify({
-            "success": True,
-        })
-
-
-
     """
     @DONE:
     Create a POST endpoint to get questions based on a search term.
@@ -186,8 +182,6 @@ def create_app(test_config=None):
 
         try:
             questions = Question.query.filter(Question.category == category_id).all()
-            if not questions:
-                abort(404)
 
             return jsonify({
                 "success": True,
@@ -259,6 +253,13 @@ def create_app(test_config=None):
         return (
             jsonify({"success": False, "error": 422, "message": "unprocessable"}),  422
         ) 
+
+    @app.errorhandler(405)
+    def unprocessable(error):
+        return (
+            jsonify({"success": False, "error": 405, "message": "method not allowed"}), 405
+        ) 
+
 
     return app
 
