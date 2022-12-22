@@ -25,6 +25,7 @@ class QuestionView extends Component {
       url: `http://127.0.0.1:5000/api/v1/questions?page=${this.state.page}`, //DONE: update request URL
       type: 'GET',
       success: (result) => {
+        console.log(result)
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
@@ -138,18 +139,20 @@ class QuestionView extends Component {
             Categories
           </h2>
           <ul>
-            {Object.keys(this.state.categories).map((id) => (
+            {Object.keys(this.state.categories).map((index) => (
               <li
-                key={id}
+                key={this.state.categories[index]['id']}
                 onClick={() => {
-                  this.getByCategory(id);
+                  this.getByCategory(this.state.categories[index]['id']);
                 }}
               >
-                {this.state.categories[id]}
+                {this.state.categories[index]['type']}
+                
                 <img
                   className='category'
-                  alt={`${this.state.categories[id].toLowerCase()}`}
-                  src={`${this.state.categories[id].toLowerCase()}.svg`}
+                  alt={`${this.state.categories[index]['type'].toLowerCase()}`}
+                  src={`${this.state.categories[index]['type'].toLowerCase()}.svg`}
+                  
                 />
               </li>
             ))}
@@ -158,12 +161,12 @@ class QuestionView extends Component {
         </div>
         <div className='questions-list'>
           <h2>Questions</h2>
-          {this.state.questions.map((q, ind) => (
+          {this.state.questions.map((q) => (
             <Question
               key={q.id}
               question={q.question}
               answer={q.answer}
-              category={this.state.categories[q.category]}
+              category={this.state.categories.find(category => {return category.id === q.category})}
               difficulty={q.difficulty}
               questionAction={this.questionAction(q.id)}
             />
